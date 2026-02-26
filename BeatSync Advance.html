@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Health Monitor | BeatSync Advance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c0c, #1a1a2e);
+            color: #f1f1f1;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.5s ease;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #f8f9ff, #eef2ff);
+            color: #222;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .light-mode .header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            color: #00d4aa;
+            font-size: 2.5rem;
+        }
+
+        .logo h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            font-weight: 600;
+            color: #00d4aa;
+        }
+
+        /* Header Controls */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .theme-toggle, .sync-btn {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.3s;
+        }
+
+        .sync-btn.syncing {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .light-mode .theme-toggle, .light-mode .sync-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .theme-toggle:hover, .sync-btn:hover {
+            background: rgba(0, 212, 170, 0.2);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(30deg);
+        }
+
+        .notifications-btn {
+            position: relative;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.3s;
+        }
+
+        .light-mode .notifications-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .notifications-btn:hover {
+            background: rgba(0, 212, 170, 0.2);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            background: #ff4757;
+            color: white;
+            font-size: 0.7rem;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid #0c0c0c;
+        }
+
+        .light-mode .notification-badge {
+            border: 2px solid #f8f9ff;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .light-mode .user-profile {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 212, 170, 0.5);
+        }
+
+        .light-mode .user-profile:hover {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .user-profile img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #00d4aa;
+        }
+
+        /* Main Layout */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Common Section Styles */
+        .section-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition: transform 0.3s;
+        }
+
+        .light-mode .section-card {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .section-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .section-header h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 70%;
+            width: 4px;
+            background: #00d4aa;
+            border-radius: 2px;
+        }
+
+        /* Vitals Grid */
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .vital-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition: transform 0.3s, border-color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .light-mode .vital-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .vital-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 170, 0.4);
+        }
+
+        /* Patient Profile Section */
+        .patient-profile {
+            background: linear-gradient(145deg, rgba(20, 30, 48, 0.9), rgba(10, 15, 25, 0.9));
+            border: 1px solid rgba(0, 212, 170, 0.2);
+        }
+
+        .light-mode .patient-profile {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(240, 245, 255, 0.95));
+            border: 1px solid rgba(0, 212, 170, 0.4);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .light-mode .profile-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #00d4aa;
+            box-shadow: 0 8px 25px rgba(0, 212, 170, 0.3);
+        }
+
+        .profile-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .profile-info p {
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+
+        .light-mode .profile-info p {
+            color: #666;
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .detail-group {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .light-mode .detail-group {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .detail-group h4 {
+            color: #00d4aa;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .light-mode .detail-item {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #aaa;
+        }
+
+        .light-mode .detail-label {
+            color: #666;
+        }
+
+        .detail-value {
+            font-weight: 500;
+        }
+
+        /* Medication Schedule */
+        .medication-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .date-picker {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            min-width: 200px;
+        }
+
+        .light-mode .date-picker {
+            background: white;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            padding: 5px;
+        }
+
+        .light-mode .view-toggle {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .view-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: #aaa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .light-mode .view-btn {
+            color: #666;
+        }
+
+        .view-btn.active {
+            background: #00d4aa;
+            color: white;
+        }
+
+        .medication-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .medication-table th {
+            text-align: left;
+            padding: 18px 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            font-weight: 500;
+            color: #aaa;
+        }
+
+        .light-mode .medication-table th {
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            color: #666;
+        }
+
+        .medication-table td {
+            padding: 18px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .light-mode .medication-table td {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .medication-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .light-mode .medication-table tr:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        /* Right Column */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Health Condition Card */
+        .health-condition {
+            background: linear-gradient(145deg, rgba(20, 30, 48, 0.9), rgba(10, 15, 25, 0.9));
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 212, 170, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .light-mode .health-condition {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(240, 245, 255, 0.95));
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 212, 170, 0.4);
+            color: #333;
+        }
+
+        .health-condition::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 212, 170, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        /* Circular Progress */
+        .progress-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin: 40px 0;
+            z-index: 1;
+        }
+
+        .circular-progress {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: conic-gradient(#00d4aa 0deg, #141e30 0deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0, 212, 170, 0.3);
+            position: relative;
+            transition: all 1s ease-out;
+        }
+
+        .light-mode .circular-progress {
+            background: conic-gradient(#00d4aa 0deg, #eef2ff 0deg);
+        }
+
+        .circular-progress::before {
+            content: '';
+            position: absolute;
+            width: 190px;
+            height: 190px;
+            background: #141e30;
+            border-radius: 50%;
+        }
+
+        .light-mode .circular-progress::before {
+            background: #f8f9ff;
+        }
+
+        .progress-value {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .percentage {
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .light-mode .percentage {
+            color: #222;
+        }
+
+        .percentage span {
+            font-size: 2rem;
+        }
+
+        .status {
+            font-size: 1.2rem;
+            color: #00d4aa;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        /* Notifications Panel */
+        .notifications-panel {
+            background: linear-gradient(145deg, rgba(20, 30, 48, 0.95), rgba(10, 15, 25, 0.95));
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid rgba(255, 75, 87, 0.3);
+            box-shadow: 0 10px 30px rgba(255, 75, 87, 0.1);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .light-mode .notifications-panel {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(245, 245, 255, 0.95));
+            border: 1px solid rgba(255, 75, 87, 0.4);
+        }
+
+        .notifications-panel h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ff6b8b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notifications-panel h3 i {
+            font-size: 1.3rem;
+        }
+
+        .notification-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Appointments Section */
+        .appointments-section {
+            background: linear-gradient(145deg, rgba(30, 40, 60, 0.9), rgba(15, 20, 35, 0.9));
+            border: 1px solid rgba(0, 150, 255, 0.3);
+        }
+
+        .light-mode .appointments-section {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(240, 248, 255, 0.95));
+            border: 1px solid rgba(0, 150, 255, 0.4);
+        }
+
+        .appointment-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #00d4aa;
+            transition: all 0.3s;
+        }
+
+        .light-mode .appointment-item {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .appointment-item.upcoming {
+            border-left-color: #ffa726;
+        }
+
+        .appointment-item.urgent {
+            border-left-color: #ff4757;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .appointment-title {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .appointment-time {
+            color: #00d4aa;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .appointment-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #00d4aa;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .light-mode .btn-secondary {
+            background: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        /* API Status */
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .light-mode .api-status {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4cd964;
+        }
+
+        .status-indicator.offline {
+            background: #ff4757;
+        }
+
+        .status-indicator.syncing {
+            background: #ffa726;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .light-mode .footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            color: #888;
+        }
+
+        /* Alert Classes */
+        .alert {
+            color: #ff6b8b !important;
+        }
+
+        .normal {
+            color: #00d4aa !important;
+        }
+
+        .warning {
+            color: #ffa726 !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .right-column {
+                grid-template-columns: 1fr 1fr;
+                display: grid;
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .vitals-grid, .profile-details {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            .header-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .medication-table {
+                display: block;
+                overflow-x: auto;
+            }
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                <h1>Beat<span>Sync</span> Advance</h1>
+            </div>
+            <div class="header-controls">
+                <button class="sync-btn" id="syncBtn" title="Sync with wearable">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="notifications-btn" id="notificationsBtn" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationBadge">3</span>
+                </button>
+                <div class="user-profile" id="userProfileBtn">
+                    <img src="download.jpg" alt="User">
+                    <div>
+                        <div class="user-name">Dr. ABCXYZ</div>
+                        <div class="user-role">Cardiologist</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="dashboard">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Patient Profile -->
+                <section class="section-card patient-profile" id="patientProfile">
+                    <div class="section-header">
+                        <h2>Patient Profile</h2>
+                        <button class="appointment-btn btn-primary" onclick="requestNotificationPermission()">
+                            <i class="fas fa-bell"></i> Enable Notifications
+                        </button>
+                    </div>
+                    <div class="profile-header">
+                        <img src="photo.jpeg" 
+                             alt="Patient" class="profile-avatar">
+                        <div class="profile-info">
+                            <h3>Mr. Tushar Yadav</h3>
+                            <p>Patient ID: P-8345-2023 | Age: 22 | Blood Type: O+</p>
+                            <div class="api-status" id="apiStatus">
+                                <div class="status-indicator" id="statusIndicator"></div>
+                                <span id="statusText">Connected to Wearable Device</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-details">
+                        <div class="detail-group">
+                            <h4><i class="fas fa-history"></i> Medical History</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Conditions</span>
+                                <span class="detail-value">Type 2 Diabetes, Hypertension</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Allergies</span>
+                                <span class="detail-value">Penicillin, Sulfa drugs</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Surgeries</span>
+                                <span class="detail-value">Appendectomy (2018)</span>
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <h4><i class="fas fa-user-md"></i> Care Team</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Primary Physician</span>
+                                <span class="detail-value">Dr. Alex Morgan</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Endocrinologist</span>
+                                <span class="detail-value">Dr. Sarah Johnson</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Emergency Contact</span>
+                                <span class="detail-value">Lisa Chen (Wife) - (+91) 123-123-4567</span>
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <h4><i class="fas fa-chart-line"></i> Health Metrics</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Height / Weight</span>
+                                <span class="detail-value">165 cm / 52 kg</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">BMI</span>
+                                <span class="detail-value">19.1 (Normal)</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Last Checkup</span>
+                                <span class="detail-value">March 15, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Vitals Section -->
+                <section class="section-card">
+                    <div class="section-header">
+                        <h2>Health & Vitals Parameters</h2>
+                        <div class="last-updated" id="lastUpdated">Updated just now</div>
+                    </div>
+                    <div class="vitals-grid" id="vitalsGrid">
+                        <!-- Vitals will be populated by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- Medication Schedule -->
+                <section class="section-card">
+                    <div class="section-header">
+                        <h2>Medication Schedule</h2>
+                        <div class="medication-controls">
+                            <input type="text" class="date-picker" id="datePicker" placeholder="Select Date">
+                            <div class="view-toggle">
+                                <button class="view-btn active" data-view="daily">Daily</button>
+                                <button class="view-btn" data-view="weekly">Weekly</button>
+                                <button class="view-btn" data-view="monthly">Monthly</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="medication-table">
+                            <thead>
+                                <tr>
+                                    <th>Medication</th>
+                                    <th>Dosage</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="medicationTableBody">
+                                <!-- Medications will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- Health Condition -->
+                <section class="health-condition">
+                    <div class="condition-header">
+                        <h2>Overall Health Condition</h2>
+                        <div class="last-updated">Updated just now</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="circular-progress" id="circularProgress">
+                            <div class="progress-value">
+                                <div class="percentage" id="percentage">0<span>%</span></div>
+                                <div class="status" id="healthStatus">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px; color: #ccc; line-height: 1.6;">
+                        <div id="healthTips">Your vital signs are within optimal ranges. Maintain your current lifestyle with regular exercise and balanced nutrition.</div>
+                    </div>
+                </section>
+
+                <!-- Appointments -->
+                <section class="section-card appointments-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-calendar-alt"></i> Upcoming Appointments</h2>
+                        <button class="appointment-btn btn-primary" onclick="addNewAppointment()">
+                            <i class="fas fa-plus"></i> Add
+                        </button>
+                    </div>
+                    <div id="appointmentsList">
+                        <!-- Appointments will be populated by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- Notifications Panel -->
+                <section class="notifications-panel" id="notificationsPanel">
+                    <h3><i class="fas fa-exclamation-circle"></i> Health Alerts</h3>
+                    <div class="notification-list" id="notificationList">
+                        <!-- Notifications will be populated by JavaScript -->
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2026 BeatSync Advance Luxury Heart Health Monitoring System. For medical use under professional supervision.</p>
+            <p class="api-status" style="margin-top: 10px; justify-content: center;">
+                <span id="wearableStatus">Mock Wearable API: Online</span>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // ========== MOCK WEARABLE API DATA ==========
+        const mockWearableAPI = {
+            baseURL: 'https://jsonplaceholder.typicode.com', // Using a real mock API
+            endpoints: {
+                vitals: '/posts/1', // We'll override the response
+                activity: '/posts/2',
+                sleep: '/posts/3'
+            },
+            
+            // Mock responses
+            getVitals: async function() {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({
+                            heartRate: Math.floor(Math.random() * 40) + 60,
+                            bloodPressure: `${Math.floor(Math.random() * 40) + 100}/${Math.floor(Math.random() * 20) + 60}`,
+                            bloodOxygen: Math.floor(Math.random() * 5) + 95,
+                            glucose: Math.floor(Math.random() * 40) + 80,
+                            temperature: (Math.random() * 1.5 + 36.5).toFixed(1),
+                            respiratoryRate: Math.floor(Math.random() * 6) + 12,
+                            timestamp: new Date().toISOString()
+                        });
+                    }, 800);
+                });
+            },
+            
+            getActivity: async function() {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({
+                            steps: Math.floor(Math.random() * 5000) + 3000,
+                            calories: Math.floor(Math.random() * 500) + 1500,
+                            distance: (Math.random() * 5 + 2).toFixed(2),
+                            activeMinutes: Math.floor(Math.random() * 120) + 30
+                        });
+                    }, 600);
+                });
+            },
+            
+            getSleep: async function() {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({
+                            duration: (Math.random() * 3 + 5).toFixed(1),
+                            deepSleep: (Math.random() * 2 + 1).toFixed(1),
+                            remSleep: (Math.random() * 1.5 + 1).toFixed(1),
+                            quality: Math.floor(Math.random() * 40) + 60
+                        });
+                    }, 700);
+                });
+            }
+        };
+
+        // ========== APPLICATION STATE ==========
+        const state = {
+            healthScore: 86,
+            vitalsData: [
+                { id: 1, title: "Heart Rate", icon: "fa-heart", unit: "BPM", value: 72, min: 60, max: 100, normalRange: "60‑100 BPM", source: "wearable" },
+                { id: 2, title: "Blood Pressure", icon: "fa-tachometer-alt", unit: "mmHg", value: "118/76", minSys: 90, maxSys: 120, normalRange: "<120/80 mmHg", source: "manual" },
+                { id: 3, title: "Blood Oxygen", icon: "fa-lungs", unit: "%", value: 98, min: 95, max: 100, normalRange: "95‑100%", source: "wearable" },
+                { id: 4, title: "Glucose Level", icon: "fa-vial", unit: "mg/dL", value: 112, min: 70, max: 100, normalRange: "70‑100 mg/dL", source: "manual" },
+                { id: 5, title: "Body Temperature", icon: "fa-thermometer-half", unit: "°C", value: 36.8, min: 36.1, max: 37.2, normalRange: "36.1‑37.2°C", source: "wearable" },
+                { id: 6, title: "Respiratory Rate", icon: "fa-wind", unit: "breaths/min", value: 14, min: 12, max: 18, normalRange: "12‑18 breaths/min", source: "wearable" }
+            ],
+            medications: [
+                { id: 1, name: "Metformin", dosage: "500mg", time: "08:00 AM", type: "tablet", status: "taken", takenAt: "08:05 AM" },
+                { id: 2, name: "Lisinopril", dosage: "10mg", time: "09:00 AM", type: "tablet", status: "pending" },
+                { id: 3, name: "Atorvastatin", dosage: "20mg", time: "08:00 PM", type: "tablet", status: "pending" },
+                { id: 4, name: "Insulin Glargine", dosage: "15 units", time: "09:00 PM", type: "injection", status: "pending" },
+                { id: 5, name: "Aspirin", dosage: "81mg", time: "07:00 AM", type: "tablet", status: "taken", takenAt: "07:10 AM" },
+                { id: 6, name: "Vitamin D3", dosage: "2000 IU", time: "12:00 PM", type: "capsule", status: "pending" }
+            ],
+            appointments: [
+                { id: 1, title: "Cardiology Checkup", doctor: "Dr. Alex Morgan", date: "Today", time: "14:30", location: "Room 304", type: "urgent" },
+                { id: 2, title: "Blood Work", doctor: "Lab Technician", date: "Tomorrow", time: "09:00", location: "Lab B", type: "upcoming" },
+                { id: 3, title: "Endocrinology Consultation", doctor: "Dr. Sarah Johnson", date: "Nov 28", time: "11:15", location: "Room 412", type: "upcoming" },
+                { id: 4, title: "Physical Therapy", doctor: "Dr. Robert Chen", date: "Dec 2", time: "16:00", location: "PT Room 2", type: "scheduled" }
+            ],
+            notifications: [
+                { id: 1, type: "warning", title: "Elevated Glucose", message: "Glucose level (112 mg/dL) is above normal range.", time: "10 min ago" },
+                { id: 2, type: "normal", title: "Heart Rate Stable", message: "Heart rate has remained within normal range for 24h.", time: "1 hour ago" },
+                { id: 3, type: "alert", title: "Appointment Today", message: "Cardiology checkup at 2:30 PM in Room 304.", time: "Just now" }
+            ],
+            apiConnected: true,
+            notificationPermission: Notification.permission
+        };
+
+        // ========== DOM ELEMENTS ==========
+        const elements = {
+            themeToggle: document.getElementById('themeToggle'),
+            syncBtn: document.getElementById('syncBtn'),
+            notificationsBtn: document.getElementById('notificationsBtn'),
+            notificationBadge: document.getElementById('notificationBadge'),
+            vitalsGrid: document.getElementById('vitalsGrid'),
+            notificationList: document.getElementById('notificationList'),
+            circularProgress: document.getElementById('circularProgress'),
+            percentageEl: document.getElementById('percentage'),
+            healthStatusEl: document.getElementById('healthStatus'),
+            healthTips: document.getElementById('healthTips'),
+            lastUpdatedEl: document.getElementById('lastUpdated'),
+            datePicker: document.getElementById('datePicker'),
+            medicationTableBody: document.getElementById('medicationTableBody'),
+            appointmentsList: document.getElementById('appointmentsList'),
+            apiStatus: document.getElementById('apiStatus'),
+            statusIndicator: document.getElementById('statusIndicator'),
+            statusText: document.getElementById('statusText'),
+            wearableStatus: document.getElementById('wearableStatus')
+        };
+
+        // ========== INITIALIZE DASHBOARD ==========
+        function initDashboard() {
+            renderVitals();
+            renderMedications();
+            renderAppointments();
+            renderNotifications();
+            updateNotificationBadge();
+            initDatePicker();
+            setupEventListeners();
+            simulateLiveUpdates();
+            animateHealthScore();
+            checkWearableConnection();
+            setupAppointmentReminders();
+            
+            // Request notification permission on load
+            if (state.notificationPermission === 'default') {
+                setTimeout(requestNotificationPermission, 2000);
+            }
+        }
+
+        // ========== RENDER VITALS CARDS ==========
+        function renderVitals() {
+            elements.vitalsGrid.innerHTML = '';
+            state.vitalsData.forEach(vital => {
+                const card = document.createElement('div');
+                card.className = 'vital-card';
+                const numericValue = typeof vital.value === 'string' ? parseInt(vital.value.split('/')[0]) : vital.value;
+                let status = 'normal';
+                if (numericValue < vital.min || numericValue > vital.max) status = 'alert';
+                else if (numericValue > vital.max * 0.9 || numericValue < vital.min * 1.1) status = 'warning';
+
+                card.innerHTML = `
+                    <div class="vital-header">
+                        <div class="vital-title">${vital.title}</div>
+                        <div class="vital-icon">
+                            <i class="fas ${vital.icon}"></i>
+                            ${vital.source === 'wearable' ? '<i class="fas fa-bluetooth" style="font-size: 0.7rem; margin-left: 5px;"></i>' : ''}
+                        </div>
+                    </div>
+                    <div class="vital-value ${status}">${vital.value} <span class="vital-unit">${vital.unit}</span></div>
+                    <div class="vital-range">Normal: ${vital.normalRange}</div>
+                `;
+                elements.vitalsGrid.appendChild(card);
+            });
+        }
+
+        // ========== RENDER MEDICATIONS ==========
+        function renderMedications() {
+            elements.medicationTableBody.innerHTML = '';
+            state.medications.forEach(med => {
+                const row = document.createElement('tr');
+                const icon = med.type === 'injection' ? 'fa-syringe' : 
+                            med.type === 'capsule' ? 'fa-capsules' : 'fa-tablet';
+                
+                row.innerHTML = `
+                    <td>
+                        <div class="med-name">
+                            <div class="med-icon">
+                                <i class="fas ${icon}"></i>
+                            </div>
+                            ${med.name}
+                        </div>
+                    </td>
+                    <td>${med.dosage}</td>
+                    <td>
+                        <div class="med-time">
+                            <i class="far fa-clock"></i>
+                            ${med.time}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-${med.status}">${med.status === 'taken' ? 'Taken at ' + med.takenAt : 'Pending'}</span>
+                    </td>
+                    <td>
+                        <button class="action-btn" onclick="markMedicationTaken(${med.id})" title="Mark as taken">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="action-btn" onclick="snoozeMedication(${med.id})" title="Snooze">
+                            <i class="fas fa-clock"></i>
+                        </button>
+                    </td>
+                `;
+                elements.medicationTableBody.appendChild(row);
+            });
+        }
+
+        // ========== RENDER APPOINTMENTS ==========
+        function renderAppointments() {
+            elements.appointmentsList.innerHTML = '';
+            state.appointments.forEach(appointment => {
+                const item = document.createElement('div');
+                item.className = `appointment-item ${appointment.type}`;
+                item.innerHTML = `
+                    <div class="appointment-header">
+                        <div class="appointment-title">${appointment.title}</div>
+                        <div class="appointment-time">
+                            <i class="far fa-clock"></i>
+                            ${appointment.time}
+                        </div>
+                    </div>
+                    <div style="color: #aaa; font-size: 0.9rem; margin-bottom: 5px;">
+                        <i class="fas fa-user-md"></i> ${appointment.doctor}
+                    </div>
+                    <div style="color: #aaa; font-size: 0.9rem;">
+                        <i class="fas fa-map-marker-alt"></i> ${appointment.location} • ${appointment.date}
+                    </div>
+                    <div class="appointment-actions">
+                        <button class="appointment-btn btn-primary" onclick="joinAppointment(${appointment.id})">
+                            <i class="fas fa-video"></i> Join
+                        </button>
+                        <button class="appointment-btn btn-secondary" onclick="rescheduleAppointment(${appointment.id})">
+                            <i class="fas fa-calendar-alt"></i> Reschedule
+                        </button>
+                    </div>
+                `;
+                elements.appointmentsList.appendChild(item);
+            });
+        }
+
+        // ========== RENDER NOTIFICATIONS ==========
+        function renderNotifications() {
+            elements.notificationList.innerHTML = '';
+            state.notifications.forEach(notif => {
+                const item = document.createElement('div');
+                item.className = `notification-item ${notif.type}`;
+                item.innerHTML = `
+                    <div class="notification-header">
+                        <strong>${notif.title}</strong>
+                        <span>${notif.time}</span>
+                    </div>
+                    <div class="notification-message">${notif.message}</div>
+                `;
+                elements.notificationList.appendChild(item);
+            });
+        }
+
+        // ========== FIXED: ANIMATE HEALTH SCORE ==========
+        function animateHealthScore() {
+            let currentPercent = 0;
+            const targetPercent = state.healthScore;
+            const duration = 1500;
+            const steps = 60;
+            const increment = targetPercent / steps;
+            const stepTime = duration / steps;
+            
+            function updateProgress() {
+                if (currentPercent < targetPercent) {
+                    currentPercent += increment;
+                    if (currentPercent > targetPercent) currentPercent = targetPercent;
+                    
+                    const degrees = (currentPercent / 100) * 360;
+                    elements.circularProgress.style.background = `conic-gradient(#00d4aa ${degrees}deg, #141e30 0deg)`;
+                    elements.percentageEl.innerHTML = Math.round(currentPercent) + '<span>%</span>';
+                    
+                    if (currentPercent >= 90) elements.healthStatusEl.textContent = 'Excellent';
+                    else if (currentPercent >= 75) elements.healthStatusEl.textContent = 'Good';
+                    else if (currentPercent >= 60) elements.healthStatusEl.textContent = 'Fair';
+                    else elements.healthStatusEl.textContent = 'Needs Attention';
+                    
+                    requestAnimationFrame(updateProgress);
+                }
+            }
+            
+            setTimeout(updateProgress, 300);
+        }
+
+        // ========== MOCK WEARABLE API INTEGRATION ==========
+        async function syncWithWearable() {
+            const syncBtn = elements.syncBtn;
+            const originalHTML = syncBtn.innerHTML;
+            
+            // Show syncing state
+            syncBtn.classList.add('syncing');
+            syncBtn.disabled = true;
+            elements.statusIndicator.className = 'status-indicator syncing';
+            elements.statusText.textContent = 'Syncing with wearable device...';
+            
+            try {
+                // Simulate API calls
+                const [vitals, activity, sleep] = await Promise.all([
+                    mockWearableAPI.getVitals(),
+                    mockWearableAPI.getActivity(),
+                    mockWearableAPI.getSleep()
+                ]);
+                
+                // Update vitals with wearable data
+                state.vitalsData[0].value = vitals.heartRate;
+                state.vitalsData[1].value = vitals.bloodPressure;
+                state.vitalsData[2].value = vitals.bloodOxygen;
+                state.vitalsData[4].value = parseFloat(vitals.temperature);
+                state.vitalsData[5].value = vitals.respiratoryRate;
+                
+                // Update UI
+                renderVitals();
+                
+                // Add notification
+                state.notifications.unshift({
+                    id: state.notifications.length + 1,
+                    type: "normal",
+                    title: "Wearable Sync Complete",
+                    message: `Updated ${Object.keys(vitals).length} vitals from your device.`,
+                    time: "Just now"
+                });
+                
+                if (state.notifications.length > 5) state.notifications.pop();
+                renderNotifications();
+                updateNotificationBadge();
+                
+                // Update status
+                elements.statusIndicator.className = 'status-indicator';
+                elements.statusText.textContent = 'Synced successfully';
+                elements.wearableStatus.textContent = 'Mock Wearable API: Last sync ' + new Date().toLocaleTimeString();
+                
+                // Show success
+                showToast('Wearable data synchronized successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Sync error:', error);
+                elements.statusIndicator.className = 'status-indicator offline';
+                elements.statusText.textContent = 'Sync failed. Check connection.';
+                showToast('Failed to sync with wearable device', 'error');
+            } finally {
+                // Reset button
+                syncBtn.classList.remove('syncing');
+                syncBtn.disabled = false;
+                syncBtn.innerHTML = originalHTML;
+                
+                // Reset status after 3 seconds
+                setTimeout(() => {
+                    if (state.apiConnected) {
+                        elements.statusIndicator.className = 'status-indicator';
+                        elements.statusText.textContent = 'Connected to Wearable Device';
+                    }
+                }, 3000);
+            }
+        }
+
+        // ========== APPOINTMENT REMINDERS ==========
+        function setupAppointmentReminders() {
+            // Check for upcoming appointments every minute
+            setInterval(() => {
+                const now = new Date();
+                const currentHour = now.getHours();
+                const currentMinute = now.getMinutes();
+                
+                // Check if any appointment is within 30 minutes
+                state.appointments.forEach(appointment => {
+                    if (appointment.date === 'Today') {
+                        const [hours, minutes] = appointment.time.split(':').map(Number);
+                        const appointmentTime = hours * 60 + minutes;
+                        const currentTime = currentHour * 60 + currentMinute;
+                        
+                        if (Math.abs(appointmentTime - currentTime) <= 30) {
+                            sendAppointmentReminder(appointment);
+                        }
+                    }
+                });
+            }, 60000); // Check every minute
+        }
+
+        function sendAppointmentReminder(appointment) {
+            // Only send if we have permission
+            if (state.notificationPermission === 'granted') {
+                const notification = new Notification(`🔔 ${appointment.title}`, {
+                    body: `Your appointment with ${appointment.doctor} is at ${appointment.time} in ${appointment.location}`,
+                    icon: 'https://cdn-icons-png.flaticon.com/512/2069/2069571.png',
+                    tag: 'appointment-reminder'
+                });
+                
+                notification.onclick = function() {
+                    window.focus();
+                    this.close();
+                };
+            }
+            
+            // Also add to in-app notifications
+            const now = new Date();
+            const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
+            state.notifications.unshift({
+                id: state.notifications.length + 1,
+                type: "alert",
+                title: "Appointment Reminder",
+                message: `${appointment.title} with ${appointment.doctor} at ${appointment.time}`,
+                time: timeString
+            });
+            
+            if (state.notifications.length > 5) state.notifications.pop();
+            renderNotifications();
+            updateNotificationBadge();
+        }
+
+        // ========== NOTIFICATION PERMISSION ==========
+        window.requestNotificationPermission = function() {
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notification");
+                return;
+            }
+            
+            if (state.notificationPermission === "granted") {
+                showToast("Notifications are already enabled!", "success");
+                return;
+            }
+            
+            if (state.notificationPermission !== "denied") {
+                Notification.requestPermission().then(function(permission) {
+                    state.notificationPermission = permission;
+                    if (permission === "granted") {
+                        showToast("Notifications enabled! You'll receive appointment reminders.", "success");
+                        
+                        // Send a test notification
+                        const notification = new Notification("VitalSync Pro", {
+                            body: "Notifications are now enabled. You'll receive important health alerts.",
+                            icon: 'https://cdn-icons-png.flaticon.com/512/2069/2069571.png'
+                        });
+                    }
+                });
+            }
+        };
+
+        // ========== UPDATE NOTIFICATION BADGE ==========
+        function updateNotificationBadge() {
+            const alertCount = state.notifications.filter(n => n.type === 'alert').length;
+            elements.notificationBadge.textContent = alertCount || state.notifications.length;
+            elements.notificationBadge.style.display = 'flex';
+        }
+
+        // ========== EVENT LISTENERS ==========
+        function setupEventListeners() {
+            // Theme Toggle
+            elements.themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('light-mode');
+                const icon = elements.themeToggle.querySelector('i');
+                icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
+            });
+
+            // Sync Button
+            elements.syncBtn.addEventListener('click', syncWithWearable);
+
+            // Notifications Button
+            elements.notificationsBtn.addEventListener('click', () => {
+                const panel = document.getElementById('notificationsPanel');
+                panel.scrollIntoView({ behavior: 'smooth' });
+                panel.style.borderColor = '#ff4757';
+                setTimeout(() => panel.style.borderColor = '', 1000);
+            });
+
+            // User Profile Button
+            document.getElementById('userProfileBtn').addEventListener('click', () => {
+                document.getElementById('patientProfile').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            // View Toggle Buttons
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        // ========== INIT DATE PICKER ==========
+        function initDatePicker() {
+            flatpickr(elements.datePicker, {
+                dateFormat: "Y-m-d",
+                defaultDate: "today",
+                onChange: function(selectedDates, dateStr) {
+                    console.log("Selected date:", dateStr);
+                }
+            });
+        }
+
+        // ========== MEDICATION FUNCTIONS ==========
+        window.markMedicationTaken = function(id) {
+            const med = state.medications.find(m => m.id === id);
+            if (med && med.status !== 'taken') {
+                med.status = 'taken';
+                const now = new Date();
+                med.takenAt = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                renderMedications();
+                
+                state.notifications.unshift({
+                    id: state.notifications.length + 1,
+                    type: "normal",
+                    title: "Medication Taken",
+                    message: `${med.name} (${med.dosage}) marked as taken.`,
+                    time: "Just now"
+                });
+                
+                if (state.notifications.length > 5) state.notifications.pop();
+                renderNotifications();
+                updateNotificationBadge();
+                
+                if (state.healthScore < 100) {
+                    state.healthScore += 1;
+                    animateHealthScore();
+                }
+                
+                showToast(`${med.name} marked as taken`, 'success');
+            }
+        };
+
+        window.snoozeMedication = function(id) {
+            const med = state.medications.find(m => m.id === id);
+            if (med) {
+                state.notifications.unshift({
+                    id: state.notifications.length + 1,
+                    type: "warning",
+                    title: "Medication Snoozed",
+                    message: `${med.name} snoozed for 30 minutes.`,
+                    time: "Just now"
+                });
+                
+                if (state.notifications.length > 5) state.notifications.pop();
+                renderNotifications();
+                updateNotificationBadge();
+                
+                showToast(`${med.name} snoozed for 30 minutes`, 'warning');
+            }
+        };
+
+        // ========== APPOINTMENT FUNCTIONS ==========
+        window.joinAppointment = function(id) {
+            const appointment = state.appointments.find(a => a.id === id);
+            showToast(`Joining ${appointment.title} with ${appointment.doctor}`, 'info');
+            // In a real app, this would open a video call
+        };
+
+        window.rescheduleAppointment = function(id) {
+            const appointment = state.appointments.find(a => a.id === id);
+            showToast(`Rescheduling ${appointment.title}`, 'info');
+            // In a real app, this would open a calendar
+        };
+
+        window.addNewAppointment = function() {
+            const newAppointment = {
+                id: state.appointments.length + 1,
+                title: "New Follow-up",
+                doctor: "Dr. Alex Morgan",
+                date: "Tomorrow",
+                time: "10:00",
+                location: "Room 305",
+                type: "upcoming"
+            };
+            
+            state.appointments.unshift(newAppointment);
+            renderAppointments();
+            
+            state.notifications.unshift({
+                id: state.notifications.length + 1,
+                type: "normal",
+                title: "Appointment Added",
+                message: `New appointment scheduled for tomorrow at 10:00 AM.`,
+                time: "Just now"
+            });
+            
+            renderNotifications();
+            updateNotificationBadge();
+            showToast("New appointment added", 'success');
+        };
+
+        // ========== WEARABLE CONNECTION CHECK ==========
+        function checkWearableConnection() {
+            // Simulate connection check
+            state.apiConnected = Math.random() > 0.1; // 90% chance of being connected
+            
+            if (state.apiConnected) {
+                elements.statusIndicator.className = 'status-indicator';
+                elements.statusText.textContent = 'Connected to Wearable Device';
+                elements.wearableStatus.textContent = 'Mock Wearable API: Online';
+            } else {
+                elements.statusIndicator.className = 'status-indicator offline';
+                elements.statusText.textContent = 'Wearable device disconnected';
+                elements.wearableStatus.textContent = 'Mock Wearable API: Offline';
+                
+                state.notifications.unshift({
+                    id: state.notifications.length + 1,
+                    type: "alert",
+                    title: "Device Disconnected",
+                    message: "Your wearable device is not connected. Some data may be outdated.",
+                    time: "Just now"
+                });
+                
+                renderNotifications();
+                updateNotificationBadge();
+            }
+        }
+
+        // ========== SIMULATE LIVE UPDATES ==========
+        function simulateLiveUpdates() {
+            setInterval(() => {
+                // Randomly update a vital
+                const index = Math.floor(Math.random() * state.vitalsData.length);
+                const vital = state.vitalsData[index];
+                const change = Math.floor(Math.random() * 5) - 2;
+                let newValue;
+                
+                if (typeof vital.value === 'string') {
+                    const parts = vital.value.split('/').map(Number);
+                    parts[0] = Math.max(80, Math.min(140, parts[0] + change));
+                    parts[1] = Math.max(60, Math.min(90, parts[1] + change));
+                    newValue = parts.join('/');
+                } else {
+                    newValue = Math.max(vital.min - 5, Math.min(vital.max + 5, vital.value + change));
+                }
+                
+                vital.value = newValue;
+                renderVitals();
+                
+                // Update last updated time
+                const now = new Date();
+                elements.lastUpdatedEl.textContent = `Updated ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+                
+                // Occasionally add a notification
+                if (Math.random() > 0.8) {
+                    const types = ['alert', 'warning', 'normal'];
+                    const type = types[Math.floor(Math.random() * types.length)];
+                    
+                    state.notifications.unshift({
+                        id: state.notifications.length + 1,
+                        type,
+                        title: type === 'alert' ? 'Abnormal Reading' : 'Vital Update',
+                        message: `${vital.title} is ${type === 'alert' ? 'outside normal range' : 'stable'}.`,
+                        time: 'Just now'
+                    });
+                    
+                    if (state.notifications.length > 5) state.notifications.pop();
+                    renderNotifications();
+                    updateNotificationBadge();
+                }
+            }, 5000);
+        }
+
+        // ========== HELPER FUNCTIONS ==========
+        function showToast(message, type = 'info') {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                background: ${type === 'success' ? '#00d4aa' : type === 'error' ? '#ff4757' : '#3498db'};
+                color: white;
+                border-radius: 10px;
+                z-index: 10000;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                animation: slideIn 0.3s ease;
+            `;
+            
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Add CSS animations for toast
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // ========== START THE DASHBOARD ==========
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
