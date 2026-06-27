@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Heart Health Monitor | BeatSync Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style type="text/css" media="screen">
+        /* Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+    </style>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-heartbeat pulse-anim"></i>
+                <h1>Beat<span>Sync</span> Pro</h1>
+                <span class="badge-vitals">AI Engine v2.0</span>
+            </div>
+            
+            <!-- Simulation Controller Console -->
+            <div class="sim-console">
+                <span class="sim-label"><i class="fas fa-sliders-h"></i> SIMULATOR STATE:</span>
+                <div class="sim-btn-group">
+                    <button class="sim-btn active" data-state="Healthy" title="Resting Healthy Rhythm">Healthy</button>
+                    <button class="sim-btn" data-state="Exercising" title="Physiological Exercise Tachycardia">Active</button>
+                    <button class="sim-btn" data-state="Stressed" title="Hypertension & High Heart Rate">Stressed</button>
+                    <button class="sim-btn" data-state="Arrhythmia" title="Irregular Heartbeat & Abnormal restecg">Arrhythmia</button>
+                    <button class="sim-btn danger-btn" data-state="Myocardial Infarction" title="ST Elevation Heart Attack Event">Critical (MI)</button>
+                </div>
+            </div>
+
+            <div class="header-controls">
+                <div class="api-status">
+                    <span class="status-indicator live" id="netStatusIndicator"></span>
+                    <span id="netStatusText">Cloud Online</span>
+                </div>
+                <button class="icon-btn" id="themeToggle" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="icon-btn" id="bellBtn" title="Health Alerts">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge-count" id="alertBadge">0</span>
+                </button>
+                <div class="user-profile">
+                    <div class="user-avatar"><i class="fas fa-user-md"></i></div>
+                    <div class="user-info">
+                        <div class="user-name">Dr. A. Mishra</div>
+                        <div class="user-role">Cardiologist</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Layout -->
+        <div class="dashboard-grid">
+            
+            <!-- Left Column: Patient Info, Vitals, ECG, Medications -->
+            <div class="col-main">
+                
+                <!-- Patient Profile Card -->
+                <section class="card patient-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-id-card"></i> Patient Telemetry Profile</h2>
+                        <span class="patient-id" id="pId">P-8345-2023</span>
+                    </div>
+                    <div class="patient-profile-wrapper">
+                        <div class="patient-avatar-box">
+                            <div class="patient-initials">TY</div>
+                            <span class="status-badge stable" id="patientStatusBadge">Normal</span>
+                        </div>
+                        <div class="patient-details-grid">
+                            <div class="p-detail">
+                                <span class="p-label">Name</span>
+                                <span class="p-val" id="pName">Mr. Tushar Yadav</span>
+                            </div>
+                            <div class="p-detail">
+                                <span class="p-label">Age / Blood Type</span>
+                                <span class="p-val" id="pAgeBlood">22 Years | O+</span>
+                            </div>
+                            <div class="p-detail">
+                                <span class="p-label">Medical History</span>
+                                <span class="p-val" id="pHistory">Type 2 Diabetes, Hypertension</span>
+                            </div>
+                            <div class="p-detail">
+                                <span class="p-label">Height / Weight</span>
+                                <span class="p-val" id="pStats">165 cm / 52 kg (BMI 19.1)</span>
+                            </div>
+                        </div>
+                        <div class="patient-team-box">
+                            <div class="team-member"><i class="fas fa-user-doctor"></i> <strong>Physician:</strong> Dr. Alex Morgan</div>
+                            <div class="team-member"><i class="fas fa-prescription-bottle-medical"></i> <strong>Care Team:</strong> Cardiology Unit B</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Vitals Grid -->
+                <section class="vitals-section">
+                    <div class="section-title-wrapper">
+                        <h2><i class="fas fa-wave-square"></i> Real-time Physiological Streams (IoT)</h2>
+                        <div class="stream-source" id="streamSourceBadge"><i class="fas fa-wifi"></i> IoT Stream: Simulated</div>
+                    </div>
+                    <div class="vitals-grid">
+                        <!-- Heart Rate -->
+                        <div class="vital-card" id="card-heartRate">
+                            <div class="vital-card-header">
+                                <span class="vital-name">Heart Rate</span>
+                                <i class="fas fa-heart vital-icon icon-hr"></i>
+                            </div>
+                            <div class="vital-value-wrapper">
+                                <span class="vital-num" id="val-heartRate">72</span>
+                                <span class="vital-unit">BPM</span>
+                            </div>
+                            <div class="vital-range">Normal: 60-100 BPM</div>
+                            <div class="sparkline-container">
+                                <canvas id="spark-heartRate"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Blood Pressure -->
+                        <div class="vital-card" id="card-bloodPressure">
+                            <div class="vital-card-header">
+                                <span class="vital-name">Blood Pressure</span>
+                                <i class="fas fa-gauge-high vital-icon icon-bp"></i>
+                            </div>
+                            <div class="vital-value-wrapper">
+                                <span class="vital-num" id="val-bloodPressure">120/80</span>
+                                <span class="vital-unit">mmHg</span>
+                            </div>
+                            <div class="vital-range">Normal: &lt; 120/80 mmHg</div>
+                            <div class="sparkline-container">
+                                <canvas id="spark-bloodPressure"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Blood Oxygen -->
+                        <div class="vital-card" id="card-bloodOxygen">
+                            <div class="vital-card-header">
+                                <span class="vital-name">Oxygen Saturation</span>
+                                <i class="fas fa-lungs vital-icon icon-spo2"></i>
+                            </div>
+                            <div class="vital-value-wrapper">
+                                <span class="vital-num" id="val-bloodOxygen">98</span>
+                                <span class="vital-unit">%</span>
+                            </div>
+                            <div class="vital-range">Normal: 95-100%</div>
+                            <div class="sparkline-container">
+                                <canvas id="spark-bloodOxygen"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Temperature -->
+                        <div class="vital-card" id="card-temperature">
+                            <div class="vital-card-header">
+                                <span class="vital-name">Body Temp</span>
+                                <i class="fas fa-thermometer-half vital-icon icon-temp"></i>
+                            </div>
+                            <div class="vital-value-wrapper">
+                                <span class="vital-num" id="val-temperature">36.7</span>
+                                <span class="vital-unit">°C</span>
+                            </div>
+                            <div class="vital-range">Normal: 36.1-37.2 °C</div>
+                            <div class="sparkline-container">
+                                <canvas id="spark-temperature"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Glucose -->
+                        <div class="vital-card" id="card-glucose">
+                            <div class="vital-card-header">
+                                <span class="vital-name">Blood Sugar</span>
+                                <i class="fas fa-droplet vital-icon icon-sugar"></i>
+                            </div>
+                            <div class="vital-value-wrapper">
+                                <span class="vital-num" id="val-glucose">105</span>
+                                <span class="vital-unit">mg/dL</span>
+                            </div>
+                            <div class="vital-range">Normal: 70-100 mg/dL</div>
+                            <div class="sparkline-container">
+                                <canvas id="spark-glucose"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Respiratory Rate -->
+                        <div class="vital-card" id="card-respRate">
+                            <div class="vital-card-header">
+                                <span class="vital-name">Respiratory Rate</span>
+                                <i class="fas fa-wind vital-icon icon-resp"></i>
+                            </div>
+                            <div class="vital-value-wrapper">
+                                <span class="vital-num" id="val-respRate">14</span>
+                                <span class="vital-unit">/min</span>
+                            </div>
+                            <div class="vital-range">Normal: 12-18 breaths</div>
+                            <div class="sparkline-container">
+                                <canvas id="spark-respRate"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ECG Waveform & 3D Pulsing Heart -->
+                <section class="card monitoring-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-chart-line"></i> Electrocardiogram & Cardiac Muscle Telemetry</h2>
+                        <div class="ecg-status-text" id="ecgLabel">Normal Sinus Rhythm</div>
+                    </div>
+                    <div class="card-row">
+                        <!-- 3D Heart Canvas -->
+                        <div class="heart-three-wrapper">
+                            <div class="heart-overlay-data">
+                                <div class="pulse-bpm-overlay"><span id="pulseBpmText">72</span> <small>BPM</small></div>
+                                <div class="pulse-title-overlay">SYNC BEAT</div>
+                            </div>
+                            <!-- Embed Three.js Import map & Script inside the module or load from script -->
+                            <div id="three-container" class="three-viewport"></div>
+                        </div>
+
+                        <!-- Scrolling ECG Canvas -->
+                        <div class="ecg-monitor-wrapper">
+                            <canvas id="ecgCanvas"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Medication Schedule Table -->
+                <section class="card med-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-pills"></i> Medication Administration Schedule</h2>
+                        <span class="sub-header">24h Schedule Integration</span>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="med-table">
+                            <thead>
+                                <tr>
+                                    <th>Medication</th>
+                                    <th>Dosage</th>
+                                    <th>Scheduled Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="medTableBody">
+                                <!-- Populated dynamically by app.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: AI Risk Panel, Wearable Console, Anomaly Logger, Appointments -->
+            <div class="col-side">
+                
+                <!-- AI Cardiac Risk Engine -->
+                <section class="card ai-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-brain"></i> AI Cardiac Risk Assessment</h2>
+                        <span class="neon-tag red" id="riskLevelTag">LOW RISK</span>
+                    </div>
+                    <div class="ai-progress-container">
+                        <div class="circular-progress-box">
+                            <svg class="progress-ring" width="160" height="160">
+                                <circle class="progress-ring-circle-bg" stroke="rgba(255,255,255,0.05)" stroke-width="12" fill="transparent" r="68" cx="80" cy="80"/>
+                                <circle class="progress-ring-circle" id="riskRing" stroke="#00d4aa" stroke-width="12" stroke-dasharray="427.2" stroke-dashoffset="427.2" fill="transparent" r="68" cx="80" cy="80"/>
+                            </svg>
+                            <div class="progress-val-text">
+                                <span class="pct-num" id="riskPercentageText">0</span><span class="pct-sign">%</span>
+                                <span class="pct-lbl">CARDIAC RISK</span>
+                            </div>
+                        </div>
+                        <div class="model-risk-breakdown">
+                            <div class="m-breakdown">
+                                <span>Clinical (Model A):</span>
+                                <strong id="clinicalRiskText">0%</strong>
+                            </div>
+                            <div class="m-breakdown">
+                                <span>Lifestyle (Model B):</span>
+                                <strong id="lifestyleRiskText">0%</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="insights-box">
+                        <h3><i class="fas fa-lightbulb"></i> Clinical Recommendations</h3>
+                        <ul id="recommendationsList" class="recommendations-list">
+                            <li>Vitals streams stable. Normal daily activities recommended.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Wearable Device Integration Console -->
+                <section class="card wearable-console-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-watch-fitness"></i> Wearable Link Interface</h2>
+                        <span class="connection-status offline" id="wearableConnText">Disconnected</span>
+                    </div>
+                    <div class="wearable-devices-list">
+                        <div class="w-device" id="wd-apple">
+                            <div class="w-info">
+                                <i class="fab fa-apple w-logo"></i>
+                                <div>
+                                    <div class="w-name">Apple Watch Series 9</div>
+                                    <div class="w-status">Inactive</div>
+                                </div>
+                            </div>
+                            <button class="w-btn" onclick="openIntegrationGuide('apple')"><i class="fas fa-link"></i> Link</button>
+                        </div>
+                        <div class="w-device" id="wd-fitbit">
+                            <div class="w-info">
+                                <i class="fas fa-heartbeat w-logo icon-sugar"></i>
+                                <div>
+                                    <div class="w-name">Fitbit Sense 2</div>
+                                    <div class="w-status">Inactive</div>
+                                </div>
+                            </div>
+                            <button class="w-btn" onclick="openIntegrationGuide('fitbit')"><i class="fas fa-link"></i> Link</button>
+                        </div>
+                        <div class="w-device" id="wd-garmin">
+                            <div class="w-info">
+                                <i class="fas fa-compass w-logo icon-bp"></i>
+                                <div>
+                                    <div class="w-name">Garmin Venu 3</div>
+                                    <div class="w-status">Inactive</div>
+                                </div>
+                            </div>
+                            <button class="w-btn" onclick="openIntegrationGuide('garmin')"><i class="fas fa-link"></i> Link</button>
+                        </div>
+                    </div>
+                    <button class="guide-trigger-btn" id="openGuideBtn">
+                        <i class="fas fa-book-open"></i> Wearable Integration Manual
+                    </button>
+                </section>
+
+                <!-- Anomaly Log -->
+                <section class="card anomaly-log-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-clipboard-list"></i> Real-time Anomaly Log</h2>
+                        <button class="clear-btn" id="clearLogBtn">Clear</button>
+                    </div>
+                    <div class="anomaly-feed" id="anomalyFeed">
+                        <div class="anomaly-empty-state" id="feedEmptyState">No anomalies detected in vital streams. Monitoring live...</div>
+                    </div>
+                </section>
+
+                <!-- Upcoming Appointments -->
+                <section class="card appt-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-calendar-check"></i> Care Appointments</h2>
+                    </div>
+                    <div class="appointments-list">
+                        <div class="appt-item urgent">
+                            <div class="appt-time"><i class="fas fa-circle-exclamation"></i> Today at 2:30 PM</div>
+                            <div class="appt-title">Cardiology Post-checkup</div>
+                            <div class="appt-doctor">Dr. Alex Morgan | Room 304</div>
+                        </div>
+                        <div class="appt-item">
+                            <div class="appt-time"><i class="far fa-clock"></i> Tomorrow at 9:00 AM</div>
+                            <div class="appt-title">Pathology Blood Chemistry Panel</div>
+                            <div class="appt-doctor">Lab Technician | Lab B</div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>&copy; 2026 BeatSync Pro Healthcare Suite. Authorized Medical Practitioner Access Only. Data HIPAA-secured.</p>
+            <div class="node-status">
+                <span>Ingestion Webhook:</span> <code id="webhookUrl">http://localhost:5000/api/wearable/ingest</code>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Wearable Device Integration Guide Modal -->
+    <div class="modal-backdrop" id="guideModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-book-medical"></i> Wearable Sync Integration Manual</h2>
+                <button class="modal-close-btn" id="closeGuideBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-content">
+                <p>Welcome to the Wearable Ingest Interface. You can connect physical watches or custom physiological sensors to compile data inside the BeatSync platform. The backend runs a public ingestion webhook at <code>/api/wearable/ingest</code>.</p>
+                
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="curl">Testing Ingestion (cURL)</button>
+                    <button class="tab-btn" data-tab="apple">Apple HealthKit (Swift)</button>
+                    <button class="tab-btn" data-tab="fitbit">Fitbit Web API (OAuth)</button>
+                    <button class="tab-btn" data-tab="terra">Terra API (Python)</button>
+                </div>
+                
+                <div class="tab-contents">
+                    <!-- Tab: cURL -->
+                    <div class="tab-pane active" id="tab-curl">
+                        <h4>Transmit Simulated Vital Signs via cURL</h4>
+                        <p>Verify network ingress by pushing a JSON payload to the ingest endpoint using curl in your shell:</p>
+                        <pre><code>curl -X POST http://localhost:5000/api/wearable/ingest \
+  -H "Content-Type: application/json" \
+  -d '{
+    "heartRate": 88,
+    "systolicBP": 132,
+    "diastolicBP": 84,
+    "bloodOxygen": 96,
+    "glucose": 110,
+    "temperature": 36.9
+  }'</code></pre>
+                        <p>Executing this will immediately bypass the browser generator loop, triggering the ML predictive scoring models and updating the telemetry dials.</p>
+                    </div>
+
+                    <!-- Tab: Apple Watch -->
+                    <div class="tab-pane" id="tab-apple">
+                        <h4>Apple HealthKit Background Ingress Integration</h4>
+                        <p>Implement background HealthKit delivery in your iOS Companion App using Swift to send updates from Apple Watch:</p>
+                        <pre><code>import HealthKit
+
+func sendVitalsToCloud(heartRate: Double, spo2: Double) {
+    let url = URL(string: "http://localhost:5000/api/wearable/ingest")!
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    
+    let json: [String: Any] = [
+        "heartRate": Int(heartRate),
+        "bloodOxygen": Int(spo2),
+        "systolicBP": 120, // Default baseline if watch lacks sensor
+        "diastolicBP": 80
+    ]
+    
+    request.httpBody = try? JSONSerialization.data(withJSONObject: json)
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        if let err = error { print("Sync failed: \(err)") }
+        else { print("Vitals successfully synchronized.") }
+    }.resume()
+}</code></pre>
+                    </div>
+
+                    <!-- Tab: Fitbit -->
+                    <div class="tab-pane" id="tab-fitbit">
+                        <h4>Fitbit OAuth 2.0 Real-time Subscription Callback</h4>
+                        <p>For cloud-to-cloud sync, authorize with Fitbit API and register a webhook callback pointing to your public server endpoint:</p>
+                        <pre><code># Python callback endpoint mapping to Fitbit webhook payload
+@app.route('/api/fitbit/callback', methods=['POST'])
+def fitbit_webhook_callback():
+    payload = request.json
+    for event in payload:
+        # Fetch actual physiological data using event subscription token
+        vitals_data = fitbit_client.get_heart_rate_time_series(user_id=event['ownerId'])
+        # Map parameters to BeatSync ingest
+        requests.post('http://localhost:5000/api/wearable/ingest', json={
+            'heartRate': vitals_data['heartRate'],
+            'bloodOxygen': vitals_data.get('spo2', 98)
+        })
+    return '', 204</code></pre>
+                    </div>
+
+                    <!-- Tab: Terra -->
+                    <div class="tab-pane" id="tab-terra">
+                        <h4>Universal Wearable Sync Bridge (Terra API)</h4>
+                        <p>Authenticate Garmin, Samsung, or Fitbit accounts using Terra's authentication widgets and consume real-time webhooks:</p>
+                        <pre><code>import requests
+
+def handle_terra_webhook(webhook_payload):
+    # Map Terra event to physiological vitals
+    data_type = webhook_payload.get("type")
+    
+    if data_type == "vitals":
+        data = webhook_payload.get("data", [{}])[0]
+        vitals_payload = {
+            "heartRate": int(data.get("heart_rate_data", {}).get("summary", {}).get("avg_hr_bpm", 72)),
+            "bloodOxygen": int(data.get("oxygen_saturation_data", {}).get("avg_spo2_pct", 98)),
+            "systolicBP": 120,
+            "diastolicBP": 80
+        }
+        # Ingest to cloud
+        requests.post("http://localhost:5000/api/wearable/ingest", json=vitals_payload)
+</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close-btn-footer" id="closeGuideBtn2">Close Manual</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Three.js Library -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+            }
+        }
+    </script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
